@@ -1,0 +1,26 @@
+{
+  "name": "employee-tracker-wk12",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "devstart": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RyanTrian/Employee-Tracker-WK12.git"
+  },
+  "author": "RyanTrian",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/RyanTrian/Employee-Tracker-WK12/issues"
+  },
+  "homepage": "https://github.com/RyanTrian/Employee-Tracker-WK12#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^8.2.4",
+    "mysql2": "^2.3.3"
+  }
+}
