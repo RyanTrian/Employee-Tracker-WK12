@@ -4,7 +4,7 @@ const { prompt, Separator } = require('inquirer');
 const cTable = require('console.table');
 require('dotenv').config()
 // require modules from other folders
-const { menu, promptAddEmployee, promptUpdateRole } = require('./src/prompts');
+const { menu, promptAddEmployee, promptUpdateRole, promptAddRole, promptAddDepartment  } = require('./src/prompts');
 const { getAllEmployee, getAllRoles, getAllDepartments } = require('./src/query');
 const db = require("./config/connection")
 // Menu prompt switch case
@@ -30,7 +30,7 @@ async function promptMenu() {
       promptMenu();
       break;
     case "Add Role":
-      addRole();
+      await addRole();
       promptMenu();
       break;
     case "View All Departments":
@@ -39,7 +39,7 @@ async function promptMenu() {
       promptMenu();
       break;
     case "Add Department":
-      addDepartment();
+      await addDepartment();
       promptMenu();
       break;
 
@@ -54,7 +54,7 @@ Then INSERT INTO employee
 */
 async function addEmployee() {
   const res = await promptAddEmployee();
-  db.promise().query(`INSERT INTO employee (first_name, last_name, role_id, manager_id)
+  await db.promise().query(`INSERT INTO employee (first_name, last_name, role_id, manager_id)
   VALUES
   (?, ?, ? ,?)`, 
   [res.firstName, res.lastName, res.role, res.manager_id],
@@ -72,7 +72,7 @@ UPDATE employee role in employee
 */
 async function updateEmployeeRole() {
   const res = await promptUpdateRole();
-  db.promise().query(`UPDATE employee 
+  await db.promise().query(`UPDATE employee 
   SET role_id = ?
   WHERE id = ?`, [res.roleId, res.employeeId],
   (err, result) => {
@@ -82,6 +82,39 @@ async function updateEmployeeRole() {
   });
   console.log("\nUpdate Employee's role\n");
 };
+
+/* 
+Run the prompt for add role
+INSERT INTO role
+*/
+async function addRole() {
+  const res = await promptAddRole();
+  await db.promise().query(`INSERT INTO role (title, salary, department_id)
+  VALUES (?, ?, ?)`, 
+  [res.role, res.salary, res.departmentId],
+  (err, result) => {
+    if (err) {
+      console.log(err);
+    };
+  });
+  console.log(`Added ${res.role} to the database`);
+};
+
+/* 
+Run the add department prompt
+INSERT INTO department
+*/
+async function addDepartment() {
+  const res = await prompt(promptAddDepartment);
+  await db.promise().query(`INSERT INTO department (name)
+  VALUES (?)`, res.department,
+  (err, result) => {
+    if (err) {
+      console.log(err);
+    };
+  });
+  console.log(`Added ${res.department} to the database`);
+}
 
 // ASCII Text Art
 console.log(`

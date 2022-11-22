@@ -1,4 +1,4 @@
-const { getAllEmployee, getAllRoles } = require('../src/query')
+const { getAllEmployee, getAllRoles, getAllDepartments } = require('../src/query')
 const { prompt } = require('inquirer');
 // Menu prompt
 const menu =
@@ -68,7 +68,7 @@ async function promptUpdateRole() {
     return { name: r.title, value: r.id };
   });
   // update employee role prompt
-  const answer = prompt([
+  const answer = await prompt([
     {
       type: "list",
       name: "employeeId",
@@ -86,6 +86,44 @@ async function promptUpdateRole() {
   return answer;
 }
 
+// async fx that runs add role prompt
+async function promptAddRole() {
+  // make a new array with all the department's name
+  const department = await getAllDepartments()
+  departmentChoices = department.map(d => {
+    return { name: d.name, value: d.id };
+  });
+  // add role prompt questions array
+  const answer = prompt([
+    {
+      type: "input",
+      name: "role",
+      message: "What is the name of the role?",
+      validate: (ans) => ans ? true : console.log("Please enter a valid answer"),
+    },
+    {
+      type: "input",
+      name: "salary",
+      message: "What is the salary of the role",
+    },
+    {
+      type: "list",
+      name: "departmentId",
+      message: "What department does the role belong to?",
+      choices: departmentChoices,
+    }
+  ])
+  return answer;
+}
+
+// Add department prompt question
+const promptAddDepartment = {
+  type: "input",
+  name: "department",
+  message: "What is the name of the department?",
+  validate: (ans) => ans ? true : console.log("Please enter a valid answer"),
+}
+
 module.exports = {
-  menu, promptAddEmployee, promptUpdateRole
+  menu, promptAddEmployee, promptUpdateRole, promptAddRole, promptAddDepartment
 };
