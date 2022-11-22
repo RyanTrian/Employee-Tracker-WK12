@@ -4,7 +4,7 @@ const { prompt, Separator } = require('inquirer');
 const cTable = require('console.table');
 require('dotenv').config()
 // require modules from other folders
-const { menu, promptAddEmployee } = require('./src/prompts');
+const { menu, promptAddEmployee, promptUpdateRole } = require('./src/prompts');
 const { getAllEmployee, getAllRoles, getAllDepartments } = require('./src/query');
 const db = require("./config/connection")
 // Menu prompt switch case
@@ -17,11 +17,11 @@ async function promptMenu() {
       promptMenu();
       break;
     case "Add Employee":
-      const answer = await addEmployee();
+      await addEmployee();
       promptMenu();
       break;
     case "Update Employee Role":
-      updateEmployeeRole();
+      await updateEmployeeRole();
       promptMenu();
       break;
     case "View All Roles":
@@ -62,9 +62,26 @@ async function addEmployee() {
     if (err) {
       console.log(err);
     }
-  console.log(`Added ${res.firstName} ${res.lastName} to the database`);
+  console.log(`\nAdded ${res.firstName} ${res.lastName} to the database\n`);
   })
 }
+
+/* 
+Run the prompt for update employee role
+UPDATE employee role in employee
+*/
+async function updateEmployeeRole() {
+  const res = await promptUpdateRole();
+  db.promise().query(`UPDATE employee 
+  SET role_id = ?
+  WHERE id = ?`, [res.roleId, res.employeeId],
+  (err, result) => {
+    if (err) {
+      console.log(err);
+    };
+  });
+  console.log("\nUpdate Employee's role\n");
+};
 
 // ASCII Text Art
 console.log(`
@@ -80,7 +97,7 @@ console.log(`
 ██╔████╔██║███████║██╔██╗██║███████║██║░░██╗░█████╗░░██████╔╝
 ██║╚██╔╝██║██╔══██║██║╚████║██╔══██║██║░░╚██╗██╔══╝░░██╔══██╗
 ██║░╚═╝░██║██║░░██║██║░╚███║██║░░██║╚██████╔╝███████╗██║░░██║
-╚═╝░░░░░╚═╝╚═╝░░╚═╝╚═╝░░╚══╝╚═╝░░╚═╝░╚═════╝░╚══════╝╚═╝░░╚═╝`);
+╚═╝░░░░░╚═╝╚═╝░░╚═╝╚═╝░░╚══╝╚═╝░░╚═╝░╚═════╝░╚══════╝╚═╝░░╚═╝\n`);
 
 // Initiate the Menu Prompt
 promptMenu();

@@ -54,9 +54,38 @@ async function promptAddEmployee() {
     },
   ])
   
-  return answer
+  return answer;
+}
+// async function that runs the update role option
+async function promptUpdateRole() {
+  // same block of code copied from promptAddEmployee
+  const employee = await getAllEmployee()
+  employeeChoices = employee.map(e => {
+    return { name: e.first_name + ' ' + e.last_name, value: e.id };
+  });
+  const role = await getAllRoles();
+  roleChoices = role.map( r => {
+    return { name: r.title, value: r.id };
+  });
+  // update employee role prompt
+  const answer = prompt([
+    {
+      type: "list",
+      name: "employeeId",
+      message: "Which employee's role do you want to update?",
+      choices: employeeChoices,
+    },
+    {
+      type: "list",
+      name: "roleId",
+      message: "Which role do you want to assign the selected employee?",
+      choices: roleChoices,
+    }
+  ]);
+
+  return answer;
 }
 
 module.exports = {
-  menu, promptAddEmployee
+  menu, promptAddEmployee, promptUpdateRole
 };
