@@ -1,13 +1,13 @@
-// Import and require Inquirer, mysql2, and console.table
+// Import and require Inquirer, dotenv, and console.table
 const { prompt, Separator } = require('inquirer');
 
 const cTable = require('console.table');
 require('dotenv').config()
 // require modules from other folders
 const { menu, promptAddEmployee } = require('./src/prompts');
-const { getAllEmployee } = require('./src/query');
+const { getAllEmployee, getAllRoles, getAllDepartments } = require('./src/query');
 const db = require("./config/connection")
-
+// Menu prompt switch case
 async function promptMenu() {
   const answer = await prompt(menu);
   switch (answer.menu) {
@@ -17,7 +17,7 @@ async function promptMenu() {
       promptMenu();
       break;
     case "Add Employee":
-      addEmployee();
+      const answer = await addEmployee();
       promptMenu();
       break;
     case "Update Employee Role":
@@ -25,7 +25,8 @@ async function promptMenu() {
       promptMenu();
       break;
     case "View All Roles":
-      viewAllRoles();
+      const roles = await getAllRoles();
+      console.table(roles);
       promptMenu();
       break;
     case "Add Role":
@@ -33,7 +34,8 @@ async function promptMenu() {
       promptMenu();
       break;
     case "View All Departments":
-      viewAllDepartments();
+      const deparments = await getAllDepartments();
+      console.table(deparments);
       promptMenu();
       break;
     case "Add Department":
@@ -42,17 +44,43 @@ async function promptMenu() {
       break;
 
     default:
-      process.end();
-      break;
+      process.exit();
   }
 };
 
-
-
+/* 
+Run the prompt for add employee
+Then INSERT INTO employee
+*/
 async function addEmployee() {
-  const answer = await prompt(promptAddEmployee);
-
-  const res = await db.promise().query(``)
+  const res = await promptAddEmployee();
+  db.promise().query(`INSERT INTO employee (first_name, last_name, role_id, manager_id)
+  VALUES
+  (?, ?, ? ,?)`, 
+  [res.firstName, res.lastName, res.role, res.manager_id],
+  (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+  console.log(`Added ${res.firstName} ${res.lastName} to the database`);
+  })
 }
 
+// ASCII Text Art
+console.log(`
+███████╗███╗░░░███╗██████╗░██╗░░░░░░█████╗░██╗░░░██╗███████╗███████╗  
+██╔════╝████╗░████║██╔══██╗██║░░░░░██╔══██╗╚██╗░██╔╝██╔════╝██╔════╝  
+█████╗░░██╔████╔██║██████╔╝██║░░░░░██║░░██║░╚████╔╝░█████╗░░█████╗░░  
+██╔══╝░░██║╚██╔╝██║██╔═══╝░██║░░░░░██║░░██║░░╚██╔╝░░██╔══╝░░██╔══╝░░  
+███████╗██║░╚═╝░██║██║░░░░░███████╗╚█████╔╝░░░██║░░░███████╗███████╗  
+╚══════╝╚═╝░░░░░╚═╝╚═╝░░░░░╚══════╝░╚════╝░░░░╚═╝░░░╚══════╝╚══════╝  
+
+███╗░░░███╗░█████╗░███╗░░██╗░█████╗░░██████╗░███████╗██████╗░
+████╗░████║██╔══██╗████╗░██║██╔══██╗██╔════╝░██╔════╝██╔══██╗
+██╔████╔██║███████║██╔██╗██║███████║██║░░██╗░█████╗░░██████╔╝
+██║╚██╔╝██║██╔══██║██║╚████║██╔══██║██║░░╚██╗██╔══╝░░██╔══██╗
+██║░╚═╝░██║██║░░██║██║░╚███║██║░░██║╚██████╔╝███████╗██║░░██║
+╚═╝░░░░░╚═╝╚═╝░░╚═╝╚═╝░░╚══╝╚═╝░░╚═╝░╚═════╝░╚══════╝╚═╝░░╚═╝`);
+
+// Initiate the Menu Prompt
 promptMenu();

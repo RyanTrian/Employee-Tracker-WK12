@@ -1,6 +1,7 @@
-const { getAllEmployee } = require('../src/query')
+const { getAllEmployee, getAllRoles } = require('../src/query')
 const { prompt } = require('inquirer');
-const menu = [
+// Menu prompt
+const menu =
   {
     type: "list",
     name: "menu",
@@ -15,15 +16,20 @@ const menu = [
       "Add Department",
       "Quit",
     ]
-  }
-];
-
+  };
+// the function that runs the add employee prompt
 async function promptAddEmployee() {
+  // make a new array of manager names from manager_id
   const employee = await getAllEmployee()
-  employeeChoices = employee.map(employee => {
-    return {name: employee.first_name + ' ' + employee.last_name, value: employee.id}
-  })
- const answer = await prompt([
+  employeeChoices = employee.map(e => {
+    return { name: e.first_name + ' ' + e.last_name, value: e.id };
+  });
+  const role = await getAllRoles();
+  roleChoices = role.map( r => {
+    return { name: r.title, value: r.id };
+  });
+  // add employee prompt
+  const answer = await prompt([
     {
       type: "input",
       name: "firstName",
@@ -38,8 +44,7 @@ async function promptAddEmployee() {
       type: "list",
       name: "role",
       message: "What is the employee\’s role?",
-      // TODO: replace the array place-holder below with the correct choices
-      choices: ['1', '2', '3'],
+      choices: roleChoices,
     },
     {
       type: "list",
@@ -48,8 +53,9 @@ async function promptAddEmployee() {
       choices: employeeChoices,
     },
   ])
-  console.log(answer);
-} 
+  
+  return answer
+}
 
 module.exports = {
   menu, promptAddEmployee
