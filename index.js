@@ -4,8 +4,10 @@ const { prompt, Separator } = require('inquirer');
 const cTable = require('console.table');
 require('dotenv').config()
 // require modules from other folders
-const { menu, promptAddEmployee, promptUpdateRole, promptAddRole, promptAddDepartment  } = require('./src/prompts');
-const { getAllEmployee, getAllRoles, getAllDepartments } = require('./src/query');
+const { menu, promptAddEmployee, promptUpdateRole, promptAddRole, promptAddDepartment,
+  promptEmployeeByManager,  } = require('./src/prompts');
+const { getAllEmployee, getAllRoles, getAllDepartments,
+  getEmployeeByManager, getBudgetByDepartment } = require('./src/query');
 const db = require("./config/connection")
 // Menu prompt switch case
 async function promptMenu() {
@@ -14,6 +16,10 @@ async function promptMenu() {
     case "View All Employee":
       const employees = await getAllEmployee();
       console.table(employees);
+      promptMenu();
+      break;
+    case "View All Employee By Manager":
+      await employeeByManager();
       promptMenu();
       break;
     case "Add Employee":
@@ -42,6 +48,10 @@ async function promptMenu() {
       await addDepartment();
       promptMenu();
       break;
+    case "View the total utilized budget of a department":
+      const budget = await getBudgetByDepartment();
+      console.table(budget);
+      break;
 
     default:
       process.exit();
@@ -62,8 +72,8 @@ async function addEmployee() {
     if (err) {
       console.log(err);
     }
-  console.log(`\nAdded ${res.firstName} ${res.lastName} to the database\n`);
   })
+  console.log(`\nAdded ${res.firstName} ${res.lastName} to the database\n`);
 }
 
 /* 
@@ -114,6 +124,16 @@ async function addDepartment() {
     };
   });
   console.log(`Added ${res.department} to the database`);
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                    BONUS                                   */
+/* -------------------------------------------------------------------------- */
+
+async function employeeByManager() {
+  const res = await promptEmployeeByManager();
+  const query = await getEmployeeByManager(res.managerId);
+  console.table(query);
 }
 
 // ASCII Text Art

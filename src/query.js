@@ -28,5 +28,30 @@ async function getAllDepartments() {
   return res[0];
 };
 
-module.exports = {getAllEmployee, getAllRoles, getAllDepartments};
+/* -------------------------------------------------------------------------- */
+/*                                    BONUS                                   */
+/* -------------------------------------------------------------------------- */
+
+async function getEmployeeByManager(id) {
+  const res = await db.promise().query(`SELECT e.id, e.first_name, e.last_name FROM employee e WHERE e.manager_id = ?`, [id],
+  (err, result) => {
+    if (err) {
+      console.log(err);
+    };
+  });
+  return res[0];
+}
+
+async function getBudgetByDepartment() {
+  const res = await db.promise().query(`SELECT d.name AS department, SUM(r.salary) AS budget
+  FROM employee e 
+  LEFT JOIN role r 
+  ON e.role_id = r.id 
+  LEFT JOIN department d 
+  ON r.department_id = d.id 
+  GROUP BY r.department_id `);
+  return res[0];
+}
+module.exports = {getAllEmployee, getAllRoles, getAllDepartments,
+  getEmployeeByManager, getBudgetByDepartment};
 

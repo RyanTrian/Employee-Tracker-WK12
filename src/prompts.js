@@ -8,12 +8,14 @@ const menu =
     message: "What would you like to do?",
     choices: [
       "View All Employee",
+      "View All Employee By Manager",
       "Add Employee",
       "Update Employee Role",
       "View All Roles",
       "Add Role",
       "View All Departments",
       "Add Department",
+      "View the total utilized budget of a department",
       "Quit",
     ]
   };
@@ -24,6 +26,7 @@ async function promptAddEmployee() {
   employeeChoices = employee.map(e => {
     return { name: e.first_name + ' ' + e.last_name, value: e.id };
   });
+  employeeChoices.unshift({ name: "None", value: null})
   const role = await getAllRoles();
   roleChoices = role.map( r => {
     return { name: r.title, value: r.id };
@@ -124,6 +127,25 @@ const promptAddDepartment = {
   validate: (ans) => ans ? true : console.log("Please enter a valid answer"),
 }
 
+/* -------------------------------------------------------------------------- */
+/*                                    BONUS                                   */
+/* -------------------------------------------------------------------------- */
+
+async function promptEmployeeByManager() {
+  const employee = await getAllEmployee()
+  employeeChoices = employee.map(e => {
+    return { name: e.first_name + ' ' + e.last_name, value: e.id };
+  });
+  const answer = prompt({
+    type: "list",
+    name: "managerId",
+    message: "Who's the manager?",
+    choices: employeeChoices,
+  });
+  return answer;
+}
+
 module.exports = {
-  menu, promptAddEmployee, promptUpdateRole, promptAddRole, promptAddDepartment
+  menu, promptAddEmployee, promptUpdateRole, promptAddRole, promptAddDepartment,
+  promptEmployeeByManager,
 };
